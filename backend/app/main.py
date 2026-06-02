@@ -1,7 +1,8 @@
+from app.api import usuarios
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db import Base, engine
-from app.api import auth, usuarios, espacios, reservas
+from app.api import auth, espacios, reservas
 
 Base.metadata.create_all(bind=engine)
 

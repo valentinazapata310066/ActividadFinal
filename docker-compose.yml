@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: reservas_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - reservas_network
+
+  backend:
+    build:
+      context: ./backend
+    container_name: reservas_backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - reservas_network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: reservas_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - reservas_network
+
+volumes:
+  postgres_data:
+
+networks:
+  reservas_network:
+    driver: bridge

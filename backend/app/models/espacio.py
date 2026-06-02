@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 from app.db import Base
 
 class Espacio(Base):
-    _tablename_ = "espacios"
+    __tablename__  = "espacios"
 
     id_espacio = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, nullable=False)
