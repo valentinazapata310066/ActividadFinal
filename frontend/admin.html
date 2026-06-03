@@ -2,37 +2,52 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrador</title>
+    <title>Administrador</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Panel de Administrador</h1>
-        <p>Bienvenido al sistema de reservas</p>
-        
-        <div class="menu">
-            <h3>Opciones:</h3>
-            <ul>
-                <li><a href="gestion-usuarios.html">Gestionar Usuarios</a></li>
-                <li><a href="gestion-espacios.html">Gestionar Espacios</a></li>
-                <li><a href="ver-reservas.html">Ver todas las reservas</a></li>
-                <li><a href="reportes.html">Reportes</a></li>
-            </ul>
-        </div>
-        
-        <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
+
+<div class="panel">
+
+    <h1>Panel Administrador</h1>
+
+    <button onclick="cerrarSesion()">
+        Cerrar sesión
+    </button>
+
+    <hr>
+
+    <h2>Crear Espacio</h2>
+
+    <input type="text" id="nombre" placeholder="Nombre espacio">
+
+    <input type="text" id="ubicacion" placeholder="Ubicación">
+
+    <input type="number" id="capacidad" placeholder="Capacidad">
+
+    <select id="estado">
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+        <option value="mantenimiento">Mantenimiento</option>
+    </select>
+
+    <button onclick="crearEspacio()">
+        Crear Espacio
+    </button>
+
+    <p id="mensajeEspacio"></p>
+
+    <hr>
+
+    <h2>Espacios Registrados</h2>
+
+    <div id="listaEspacios">
+        Próximamente conexión API
     </div>
-    
-    <script src="js/login.js"></script>
-    <script>
-        // Verificar autenticación al cargar la página
-        const token = localStorage.getItem("token");
-        const rol = localStorage.getItem("rol");
-        
-        if (!token || rol !== "admin") {
-            window.location.href = "login.html";
-        }
-    </script>
+
+</div>
+
+<script src="js/admin.js"></script>
+
 </body>
 </html>

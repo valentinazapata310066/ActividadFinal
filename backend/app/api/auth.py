@@ -30,15 +30,9 @@ def login(
         )
 
     token = crear_token({
-<<<<<<< Updated upstream
         "sub": usuario.correo,
         "id_usuario": usuario.id_usuario,
         "rol": usuario.rol
-=======
-        "sub": usuarios.correo,
-        "id_usuario": usuarios.id_usuario,
-        "rol": usuarios.rol
->>>>>>> Stashed changes
     })
 
     return {"access_token": token, "token_type": "bearer"}

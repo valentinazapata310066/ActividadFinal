@@ -1,69 +1,82 @@
-async function cargarEspacios() {
-    const token = localStorage.getItem("token")
-    const espacios = await getEspacios(token)
-    const lista = document.getElementById("lista-espacios")
-    lista.innerHTML = ""
+function cerrarSesion(){
+    localStorage.removeItem("token");
+    window.location.href="login.html";
+}
 
-    espacios.forEach(e => {
+let reservas=[];
+
+function crearReserva(){
+
+    let espacio =
+        document.getElementById("espacio").value;
+
+    let fecha =
+        document.getElementById("fecha").value;
+
+    let horaInicio =
+        document.getElementById("horaInicio").value;
+
+    let horaFin =
+        document.getElementById("horaFin").value;
+
+    let mensaje =
+        document.getElementById("mensajeReserva");
+
+    if(
+        espacio=="" ||
+        fecha=="" ||
+        horaInicio=="" ||
+        horaFin==""
+    ){
+        mensaje.innerText =
+            "Complete todos los campos";
+        return;
+    }
+
+    let reserva = {
+        espacio,
+        fecha,
+        horaInicio,
+        horaFin
+    };
+
+    reservas.push(reserva);
+
+    mensaje.innerText =
+        "Reserva creada (modo prueba)";
+
+    mostrarReservas();
+
+    document.getElementById("espacio").value="";
+    document.getElementById("fecha").value="";
+    document.getElementById("horaInicio").value="";
+    document.getElementById("horaFin").value="";
+}
+
+function mostrarReservas(){
+
+    let lista =
+        document.getElementById("listaReservas");
+
+    lista.innerHTML="";
+
+    reservas.forEach((r,index)=>{
+
         lista.innerHTML += `
-            <div class="card">
-                <h3>${e.nombre}</h3>
-                <p>📍 ${e.ubicacion}</p>
-                <p>👥 Capacidad: ${e.capacidad}</p>
-                <p>Estado: ${e.estado}</p>
+            <div class="cardEspacio">
+                <h3>${r.espacio}</h3>
+                <p>${r.fecha}</p>
+                <p>${r.horaInicio} - ${r.horaFin}</p>
+
+                <button onclick="cancelarReserva(${index})">
+                    Cancelar
+                </button>
             </div>
-        `
-    })
+        `;
+    });
 }
 
-async function cargarMisReservas() {
-    const token = localStorage.getItem("token")
-    const reservas = await getReservas(token)
-    const lista = document.getElementById("lista-reservas")
-    lista.innerHTML = ""
-
-    reservas.forEach(r => {
-        lista.innerHTML += `
-            <div class="card">
-                <p>📅 ${r.fecha} | ⏰ ${r.hora_inicio} - ${r.hora_fin}</p>
-                <p>Estado: <strong>${r.estado}</strong></p>
-            </div>
-        `
-    })
-}
-
-async function crearReservaForm() {
-    const token = localStorage.getItem("token")
-    const datos = {
-        id_espacio: parseInt(document.getElementById("id_espacio").value),
-        fecha: document.getElementById("fecha").value,
-        hora_inicio: document.getElementById("hora_inicio").value,
-        hora_fin: document.getElementById("hora_fin").value,
-        cantidad_asistentes: parseInt(document.getElementById("cantidad_asistentes").value)
-    }
-
-    const resultado = await crearReserva(token, datos)
-    const mensaje = document.getElementById("mensaje-reserva")
-
-    if (resultado.id_reserva) {
-        mensaje.textContent = "✅ Reserva creada exitosamente"
-        mensaje.style.color = "green"
-        cargarMisReservas()
-    } else {
-        mensaje.textContent = "❌ " + (resultado.detail || "Error al crear reserva")
-        mensaje.style.color = "red"
-    }
-}
-
-function cerrarSesion() {
-    localStorage.clear()
-    window.location.href = "login.html"
-}
-
-window.onload = () => {
-    if (!localStorage.getItem("token")) {
-        window.location.href = "login.html"
-    }
-    cargarEspacios()
-    cargarMisReservas()
+function cancelarReserva(index){
+    reservas.splice(index,1);
+    mostrarReservas();
 }
