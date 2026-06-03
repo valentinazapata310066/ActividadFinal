@@ -22,6 +22,13 @@ def listar_espacios(
 ):
     return crud_espacio.listar(db)
 
+@router.get("/disponibles", response_model=list[EspacioRespuesta])
+def listar_espacios_disponibles(
+    db: Session = Depends(get_db),
+    _=Depends(get_usuario_actual)
+):
+    return crud_espacio.listar_disponibles(db)
+
 @router.get("/{id_espacio}", response_model=EspacioRespuesta)
 def obtener_espacio(
     id_espacio: int,

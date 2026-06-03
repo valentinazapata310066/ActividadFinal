@@ -1,12 +1,8 @@
-from app.api import usuarios
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import Base, engine
-from app.api import auth, usuarios, espacios, reservas
-
 from app.db import Base, engine, SessionLocal
-from app.api import auth, espacios, reservas
-from app.models.usuarios import Usuarios
+from app.api import auth, espacios, reservas, usuarios
+from app.models.usuario import Usuario  # ← CORREGIDO
 from app.services.auth_service import hashear_password
 
 Base.metadata.create_all(bind=engine)
@@ -14,9 +10,9 @@ Base.metadata.create_all(bind=engine)
 def crear_admin_inicial():
     db = SessionLocal()
     try:
-        admin = db.query(Usuarios).filter(Usuarios.correo == "admin@test.com").first()
+        admin = db.query(Usuario).filter(Usuario.correo == "admin@test.com").first()
         if not admin:
-            nuevo_admin = Usuarios(
+            nuevo_admin = Usuario(
                 nombre="Administrador",
                 correo="admin@test.com",
                 password_hash=hashear_password("admin123"),
@@ -25,7 +21,7 @@ def crear_admin_inicial():
             )
             db.add(nuevo_admin)
             db.commit()
-            print("✅ Admin inicial creado")
+            print("✅ Admin inicial creado - Correo: admin@test.com, Contraseña: admin123")
     finally:
         db.close()
 
@@ -33,7 +29,7 @@ crear_admin_inicial()
 
 app = FastAPI(
     title="Sistema de Reservas de Espacios Institucionales",
-    description="API para gestión de reservas con autenticación JWT y control de acceso por roles",
+    description="API para gestión de reservas con autenticación JWT",
     version="1.0.0"
 )
 

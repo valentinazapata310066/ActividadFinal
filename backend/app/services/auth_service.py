@@ -5,13 +5,13 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.db import get_db
-from app.models.usuarios import Usuarios
+from app.models.usuario import Usuario
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "mi-secret-key-por-defecto")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
@@ -33,7 +33,7 @@ def crear_token(data: dict) -> str:
 def get_usuario_actual(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
-) -> Usuarios:
+) -> Usuario:  # ← CORREGIDO: Usuario en lugar de Usuarios
     credenciales_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudo validar las credenciales",
@@ -47,14 +47,14 @@ def get_usuario_actual(
     except JWTError:
         raise credenciales_exception
 
-    usuario = db.query(Usuarios).filter(Usuarios.correo == correo).first()
+    usuario = db.query(Usuario).filter(Usuario.correo == correo).first()
     if usuario is None:
         raise credenciales_exception
     if not usuario.activo:
         raise HTTPException(status_code=400, detail="Usuario inactivo")
     return usuario
 
-def get_admin_actual(usuario: Usuarios = Depends(get_usuario_actual)) -> Usuarios:
+def get_admin_actual(usuario: Usuario = Depends(get_usuario_actual)) -> Usuario:
     if usuario.rol != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

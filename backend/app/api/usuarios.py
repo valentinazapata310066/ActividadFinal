@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db import get_db
-from app.schemas.usuarios import UsuarioCrear, UsuarioRespuesta, UsuarioActualizar
+from app.schemas.usuario import UsuarioCrear, UsuarioRespuesta, UsuarioActualizar
 from app.services.auth_service import get_usuario_actual, get_admin_actual
-from app.crud import usuarios as crud_usuario
+from app.crud import usuario as crud_usuario
 
-router = APIRouter(prefix="/usuario", tags=["Usuario"])
+router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
 @router.post("/", response_model=UsuarioRespuesta, status_code=status.HTTP_201_CREATED)
 def crear_usuario(
@@ -27,7 +27,7 @@ def registro_publico(datos: UsuarioCrear, db: Session = Depends(get_db)):
     return crud_usuario.crear(db, datos)
 
 @router.get("/", response_model=list[UsuarioRespuesta])
-def listar_usuario(
+def listar_usuarios(
     db: Session = Depends(get_db),
     _=Depends(get_admin_actual)
 ):

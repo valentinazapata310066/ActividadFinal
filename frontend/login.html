@@ -28,6 +28,14 @@
             color: #333;
             margin-bottom: 30px;
         }
+        .rol-info {
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
         input {
             width: 100%;
             padding: 12px;
@@ -55,18 +63,54 @@
             text-align: center;
             font-size: 14px;
         }
+        .volver {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .volver a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h2>Sistema de Reservas</h2>
+        
+        <div class="rol-info" id="rolInfo">
+            Cargando...
+        </div>
+        
         <input type="text" id="correo" placeholder="Correo electrónico">
         <input type="password" id="password" placeholder="Contraseña">
         <button onclick="hacerLogin()">Iniciar Sesión</button>
         <div id="mensaje" class="mensaje"></div>
+        
+        <div class="volver">
+            <a href="index.html">← Volver a seleccionar rol</a>
+        </div>
     </div>
 
     <script>
+        // Recuperar el rol seleccionado en index.html
+        let rolSeleccionado = localStorage.getItem('rolSeleccionado');
+        
+        // Mostrar información del rol en la página
+        const rolInfo = document.getElementById('rolInfo');
+        if (rolSeleccionado === 'admin') {
+            rolInfo.textContent = '🔐 Iniciando sesión como ADMINISTRADOR';
+            rolInfo.style.background = '#e8e0ff';
+            rolInfo.style.color = '#764ba2';
+        } else if (rolSeleccionado === 'usuario') {
+            rolInfo.textContent = '👤 Iniciando sesión como USUARIO';
+            rolInfo.style.background = '#e0f0ff';
+            rolInfo.style.color = '#667eea';
+        } else {
+            // Si no hay rol seleccionado, redirigir a index
+            window.location.href = 'index.html';
+        }
+        
         async function hacerLogin() {
             const correo = document.getElementById('correo').value;
             const password = document.getElementById('password').value;
@@ -100,7 +144,10 @@
                     const data = await response.json();
                     console.log('Token recibido:', data);
                     
+                    // Guardar token y rol en localStorage
                     localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('rol', rolSeleccionado);  // ← GUARDAR EL ROL
+                    
                     mensajeDiv.textContent = 'Login exitoso! Redirigiendo...';
                     mensajeDiv.style.color = 'green';
                     
