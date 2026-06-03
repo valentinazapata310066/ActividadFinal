@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuario</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="panel">
+
+    <h1>Panel Usuario</h1>
+
+    <button onclick="cerrarSesion()">
+        Cerrar sesión
+    </button>
+
+    <hr>
+
+    <h2>Reservar Espacio</h2>
+
+    <input type="text" id="espacio"
+        placeholder="Espacio">
+
+    <input type="date" id="fecha">
+
+    <input type="time" id="horaInicio">
+
+    <input type="time" id="horaFin">
+
+    <button onclick="crearReserva()">
+        Crear Reserva
+    </button>
+
+    <p id="mensajeReserva"></p>
+
+    <hr>
+
+    <h2>Mis Reservas</h2>
+
+    <div id="listaReservas">
+
+    </div>
+
+</div>
+
+<script src="js/usuario.js"></script>
+
+</body>
+</html>

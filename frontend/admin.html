@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrador</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="panel">
+
+    <h1>Panel Administrador</h1>
+
+    <button onclick="cerrarSesion()">
+        Cerrar sesión
+    </button>
+
+    <hr>
+
+    <h2>Crear Espacio</h2>
+
+    <input type="text" id="nombre" placeholder="Nombre espacio">
+
+    <input type="text" id="ubicacion" placeholder="Ubicación">
+
+    <input type="number" id="capacidad" placeholder="Capacidad">
+
+    <select id="estado">
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+        <option value="mantenimiento">Mantenimiento</option>
+    </select>
+
+    <button onclick="crearEspacio()">
+        Crear Espacio
+    </button>
+
+    <p id="mensajeEspacio"></p>
+
+    <hr>
+
+    <h2>Espacios Registrados</h2>
+
+    <div id="listaEspacios">
+        Próximamente conexión API
+    </div>
+
+</div>
+
+<script src="js/admin.js"></script>
+
+</body>
+</html>
