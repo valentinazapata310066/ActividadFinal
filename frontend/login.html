@@ -3,25 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Reservas</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Login - Sistema de Reservas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        .mensaje {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-
     <div class="login-container">
         <h2>Sistema de Reservas</h2>
-
-        <input type="email" id="correo" placeholder="Correo">
-
+        <input type="text" id="correo" placeholder="Correo electrónico">
         <input type="password" id="password" placeholder="Contraseña">
-
-        <button onclick="login()">
-            Iniciar sesión
-        </button>
-
-        <p id="mensaje"></p>
+        <button onclick="hacerLogin()">Iniciar Sesión</button>
+        <div id="mensaje" class="mensaje"></div>
     </div>
 
-    <script src="js/login.js"></script>
+    <script>
+        async function hacerLogin() {
+            const correo = document.getElementById('correo').value;
+            const password = document.getElementById('password').value;
+            const mensajeDiv = document.getElementById('mensaje');
+            
+            if (!correo || !password) {
+                mensajeDiv.textContent = 'Por favor ingrese todos los campos';
+                mensajeDiv.style.color = 'red';
+                return;
+            }
+            
+            mensajeDiv.textContent = 'Conectando...';
+            mensajeDiv.style.color = 'blue';
+            
+            const formData = new URLSearchParams();
+            formData.append('username', correo);
+            formData.append('password', password);
+            
+            try {
+                const response = await fetch('http://localhost:8000/auth/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+                
+                console.log('Respuesta:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Token recibido:', data);
+                    
+                    localStorage.setItem('token', data.access_token);
+                    mensajeDiv.textContent = 'Login exitoso! Redirigiendo...';
+                    mensajeDiv.style.color = 'green';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    const error = await response.json();
+                    mensajeDiv.textContent = error.detail || 'Error de autenticación';
+                    mensajeDiv.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mensajeDiv.textContent = 'Error al conectar con el servidor';
+                mensajeDiv.style.color = 'red';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Usuario</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Panel de Usuario</h1>
+        <p>Bienvenido al sistema de reservas</p>
+        
+        <div class="menu">
+            <h3>Opciones:</h3>
+            <ul>
+                <li><a href="mis-reservas.html">Mis Reservas</a></li>
+                <li><a href="nueva-reserva.html">Nueva Reserva</a></li>
+                <li><a href="espacios-disponibles.html">Ver Espacios Disponibles</a></li>
+                <li><a href="mi-perfil.html">Mi Perfil</a></li>
+            </ul>
+        </div>
+        
+        <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
+    </div>
+    
+    <script src="js/login.js"></script>
+    <script>
+        // Verificar autenticación al cargar la página
+        const token = localStorage.getItem("token");
+        const rol = localStorage.getItem("rol");
+        
+        if (!token || rol !== "usuario") {
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

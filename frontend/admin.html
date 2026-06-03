@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Panel de Administrador</h1>
+        <p>Bienvenido al sistema de reservas</p>
+        
+        <div class="menu">
+            <h3>Opciones:</h3>
+            <ul>
+                <li><a href="gestion-usuarios.html">Gestionar Usuarios</a></li>
+                <li><a href="gestion-espacios.html">Gestionar Espacios</a></li>
+                <li><a href="ver-reservas.html">Ver todas las reservas</a></li>
+                <li><a href="reportes.html">Reportes</a></li>
+            </ul>
+        </div>
+        
+        <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
+    </div>
+    
+    <script src="js/login.js"></script>
+    <script>
+        // Verificar autenticación al cargar la página
+        const token = localStorage.getItem("token");
+        const rol = localStorage.getItem("rol");
+        
+        if (!token || rol !== "admin") {
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
