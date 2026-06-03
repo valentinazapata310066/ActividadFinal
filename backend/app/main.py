@@ -1,14 +1,13 @@
+from app.api import usuarios
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-<<<<<<< Updated upstream
 from app.db import Base, engine
 from app.api import auth, usuarios, espacios, reservas
-=======
+
 from app.db import Base, engine, SessionLocal
 from app.api import auth, espacios, reservas
 from app.models.usuarios import Usuarios
 from app.services.auth_service import hashear_password
->>>>>>> Stashed changes
 
 Base.metadata.create_all(bind=engine)
 
