@@ -11,12 +11,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "mi-secret-key-por-defecto")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 def verificar_password(password_plano: str, password_hash: str) -> bool:
     return pwd_context.verify(password_plano, password_hash)
@@ -33,7 +33,7 @@ def crear_token(data: dict) -> str:
 def get_usuario_actual(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
-) -> Usuario:
+) -> Usuario:  # ← CORREGIDO: Usuario en lugar de Usuarios
     credenciales_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudo validar las credenciales",

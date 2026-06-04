@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Reservas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 { font-size: 1.3rem; }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+
+        .bienvenida {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .bienvenida h2 { color: #667eea; }
+
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .section h2 { color: #667eea; margin-bottom: 1rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn:hover { opacity: 0.9; }
+
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background: #38a169;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        .card h3 { color: #333; margin-bottom: 0.5rem; }
+        .card p { color: #666; font-size: 14px; margin-bottom: 0.3rem; }
+
+        .estado {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .estado-esperando { background: #fff3cd; color: #856404; }
+        .estado-aprobada { background: #d4edda; color: #155724; }
+        .estado-rechazada { background: #f8d7da; color: #721c24; }
+
+        .mensaje { 
+            margin-top: 10px; 
+            font-size: 14px; 
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .mensaje-exito { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .mensaje-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .mensaje-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .hidden { display: none; }
+        
+        .reglas {
+            background: #f0f4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>🏛️ Sistema de Reservas Institucional</h1>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <span id="infoUsuario"></span>
+        <button class="logout-btn" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="bienvenida">
+        <h2 id="tituloBienvenida"></h2>
+        <p id="subtituloBienvenida"></p>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div id="panelAdmin" class="hidden">
+        <div class="section">
+            <h2>➕ Gestión de Espacios</h2>
+            <div class="form-grid">
+                <input type="text" id="nombreEspacio" placeholder="Nombre del espacio *">
+                <input type="text" id="ubicacionEspacio" placeholder="Ubicación *">
+                <input type="number" id="capacidadEspacio" placeholder="Capacidad *">
+                <select id="estadoEspacio">
+                    <option value="disponible">Disponible</option>
+                    <option value="inactivo">Inactivo</option>
+                    <option value="en mantenimiento">En mantenimiento</option>
+                </select>
+            </div>
+            <button class="btn" onclick="crearEspacio()">Crear Espacio</button>
+            <div id="mensajeEspacio" class="mensaje" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>🏛️ Espacios Registrados</h2>
+            <div id="listaEspaciosAdmin" class="cards-grid"></div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Reservas Pendientes de Aprobación</h2>
+            <div id="listaReservasAdmin" class="cards-grid"></div>
+        </div>
+    </div>
+
+    <!-- PANEL USUARIO -->
+    <div id="panelUsuario" class="hidden">
+        <div class="reglas">
+            ⏰ Reglas: Mínimo 24h anticipación · Lun-Vie 7am-8pm · Sáb 8am-12pm · No domingos
+        </div>
+        
+        <div class="section">
+            <h2>📅 Crear Nueva Reserva</h2>
+            <div class="form-grid">
+                <select id="idEspacioSelect">
+                    <option value="">Seleccione un espacio...</option>
+                </select>
+                <input type="date" id="fechaReserva">
+                <input type="time" id="horaInicio">
+                <input type="time" id="horaFin">
+                <input type="number" id="cantidadAsistentes" placeholder="Número de asistentes">
+            </div>
+            <button class="btn" onclick="crearReserva()">📌 Solicitar Reserva</button>
+            <div id="mensajeReserva" class="mensaje" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>🏛️ Espacios Disponibles</h2>
+            <div id="listaEspaciosUsuario" class="cards-grid"></div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Mis Reservas</h2>
+            <div id="listaReservasUsuario" class="cards-grid"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const API_URL = "http://localhost:8000"
+const token = localStorage.getItem("token")
+const rol = localStorage.getItem("rolSeleccionado")
+
+if (!token) window.location.href = "login.html"
+if (!rol) window.location.href = "index.html"
+
+let usuarioActual = null;
+
+async function getUsuarioActual() {
+    try {
+        const res = await fetch(`${API_URL}/usuarios/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+            usuarioActual = await res.json();
+        }
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+function mostrarMensaje(elementId, mensaje, tipo) {
+    const element = document.getElementById(elementId);
+    element.textContent = mensaje;
+    element.className = `mensaje mensaje-${tipo}`;
+    element.style.display = 'block';
+    setTimeout(() => {
+        element.style.display = 'none';
+    }, 5000);
+}
+
+function cerrarSesion() {
+    localStorage.clear();
+    window.location.href = "index.html";
+}
+
+window.onload = async () => {
+    await getUsuarioActual();
+    
+    document.getElementById("infoUsuario").textContent = `👤 ${rol === "admin" ? "Administrador" : usuarioActual?.nombre || "Usuario"}`
+    
+    if (rol === "admin") {
+        document.getElementById("tituloBienvenida").textContent = "👋 Bienvenido, Administrador"
+        document.getElementById("subtituloBienvenida").textContent = "Gestiona espacios y aprueba/rechaza reservas"
+        document.getElementById("panelAdmin").classList.remove("hidden")
+        cargarEspaciosAdmin()
+        cargarReservasPendientes()
+    } else {
+        document.getElementById("tituloBienvenida").textContent = `👋 ¡Bienvenido, ${usuarioActual?.nombre || "Usuario"}!`
+        document.getElementById("subtituloBienvenida").textContent = "Consulta espacios disponibles y crea tus reservas"
+        document.getElementById("panelUsuario").classList.remove("hidden")
+        cargarEspaciosUsuario()
+        cargarMisReservas()
+        cargarEspaciosParaSelect()
+    }
+}
+
+// ESPACIOS
+async function cargarEspaciosAdmin() {
+    try {
+        const res = await fetch(`${API_URL}/espacios/`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+            const espacios = await res.json()
+            const lista = document.getElementById("listaEspaciosAdmin")
+            if (espacios.length === 0) {
+                lista.innerHTML = '<p>📭 No hay espacios registrados</p>'
+            } else {
+                lista.innerHTML = espacios.map(e => `
+                    <div class="card">
+                        <h3>🏢 ${e.nombre}</h3>
+                        <p>📍 ${e.ubicacion}</p>
+                        <p>👥 Capacidad: ${e.capacidad}</p>
+                        <p>📌 Estado: <span class="estado">${e.estado}</span></p>
+                    </div>
+                `).join("")
+            }
+        }
+    } catch (error) {
+        console.error("Error:", error)
+    }
+}
+
+async function cargarEspaciosUsuario() {
+    try {
+        const res = await fetch(`${API_URL}/espacios/disponibles`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+            const espacios = await res.json()
+            const lista = document.getElementById("listaEspaciosUsuario")
+            if (espacios.length === 0) {
+                lista.innerHTML = '<p>📭 No hay espacios disponibles</p>'
+            } else {
+                lista.innerHTML = espacios.map(e => `
+                    <div class="card">
+                        <h3>🏢 ${e.nombre}</h3>
+                        <p>📍 ${e.ubicacion}</p>
+                        <p>👥 Capacidad: ${e.capacidad}</p>
+                        <p>📌 Estado: <span class="estado">${e.estado}</span></p>
+                    </div>
+                `).join("")
+            }
+        }
+    } catch (error) {
+        console.error("Error:", error)
+    }
+}
+
+async function cargarEspaciosParaSelect() {
+    try {
+        const res = await fetch(`${API_URL}/espacios/disponibles`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+            const espacios = await res.json()
+            const select = document.getElementById("idEspacioSelect")
+            select.innerHTML = '<option value="">Seleccione un espacio...</option>' + 
+                espacios.map(e => `<option value="${e.id_espacio}">${e.nombre} (Cap: ${e.capacidad})</option>`).join("")
+        }
+    } catch (error) {
+        console.error("Error:", error)
+    }
+}
+
+async function crearEspacio() {
+    const datos = {
+        nombre: document.getElementById("nombreEspacio").value,
+        ubicacion: document.getElementById("ubicacionEspacio").value,
+        capacidad: parseInt(document.getElementById("capacidadEspacio").value),
+        estado: document.getElementById("estadoEspacio").value
+    }
+    
+    if (!datos.nombre || !datos.ubicacion || !datos.capacidad) {
+        mostrarMensaje("mensajeEspacio", "❌ Complete todos los campos", "error")
+        return
+    }
+    
+    try {
+        const res = await fetch(`${API_URL}/espacios/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify(datos)
+        })
+        
+        if (res.ok) {
+            mostrarMensaje("mensajeEspacio", "✅ Espacio creado exitosamente", "exito")
+            document.getElementById("nombreEspacio").value = ""
+            document.getElementById("ubicacionEspacio").value = ""
+            document.getElementById("capacidadEspacio").value = ""
+            cargarEspaciosAdmin()
+        } else {
+            const err = await res.json()
+            mostrarMensaje("mensajeEspacio", "❌ " + (err.detail || "Error"), "error")
+        }
+    } catch (error) {
+        mostrarMensaje("mensajeEspacio", "❌ Error de conexión", "error")
+    }
+}
+
+// RESERVAS
+async function cargarReservasPendientes() {
+    try {
+        const res = await fetch(`${API_URL}/reservas/pendientes`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+            const reservas = await res.json()
+            const lista = document.getElementById("listaReservasAdmin")
+            if (reservas.length === 0) {
+                lista.innerHTML = '<p>✅ No hay reservas pendientes</p>'
+            } else {
+                lista.innerHTML = reservas.map(r => `
+                    <div class="card">
+                        <h3>📝 Reserva #${r.id_reserva}</h3>
+                        <p>📅 Fecha: ${r.fecha}</p>
+                        <p>⏰ ${r.hora_inicio} - ${r.hora_fin}</p>
+                        <p>👥 ${r.cantidad_asistentes} asistentes</p>
+                        <p>📌 Estado: <span class="estado estado-${r.estado}">${r.estado}</span></p>
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <button class="btn-success" onclick="cambiarEstado(${r.id_reserva}, 'aprobada')">✅ Aprobar</button>
+                            <button class="btn-danger" onclick="cambiarEstado(${r.id_reserva}, 'rechazada')">❌ Rechazar</button>
+                        </div>
+                    </div>
+                `).join("")
+            }
+        }
+    } catch (error) {
+        console.error("Error:", error)
+    }
+}
+
+async function cargarMisReservas() {
+    try {
+        const res = await fetch(`${API_URL}/reservas/mis-reservas`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+            const reservas = await res.json()
+            const lista = document.getElementById("listaReservasUsuario")
+            if (reservas.length === 0) {
+                lista.innerHTML = '<p>📭 No tienes reservas</p>'
+            } else {
+                lista.innerHTML = reservas.map(r => `
+                    <div class="card">
+                        <h3>📝 Reserva #${r.id_reserva}</h3>
+                        <p>📅 ${r.fecha} | ⏰ ${r.hora_inicio} - ${r.hora_fin}</p>
+                        <p>👥 ${r.cantidad_asistentes} asistentes</p>
+                        <p>📌 Estado: <span class="estado estado-${r.estado}">${r.estado}</span></p>
+                        ${r.estado === 'esperando' ? 
+                            `<button class="btn-danger" style="margin-top:8px;" onclick="cancelarReserva(${r.id_reserva})">🗑️ Cancelar</button>` : 
+                            ''}
+                    </div>
+                `).join("")
+            }
+        }
+    } catch (error) {
+        console.error("Error:", error)
+    }
+}
+
+async function crearReserva() {
+    const idEspacio = document.getElementById("idEspacioSelect").value
+    const fecha = document.getElementById("fechaReserva").value
+    const horaInicio = document.getElementById("horaInicio").value
+    const horaFin = document.getElementById("horaFin").value
+    const cantidadAsistentes = document.getElementById("cantidadAsistentes").value
+    
+    if (!idEspacio || !fecha || !horaInicio || !horaFin || !cantidadAsistentes) {
+        mostrarMensaje("mensajeReserva", "❌ Complete todos los campos", "error")
+        return
+    }
+    
+    const datos = {
+        id_espacio: parseInt(idEspacio),
+        fecha: fecha,
+        hora_inicio: horaInicio,
+        hora_fin: horaFin,
+        cantidad_asistentes: parseInt(cantidadAsistentes)
+    }
+    
+    try {
+        const res = await fetch(`${API_URL}/reservas/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify(datos)
+        })
+        
+        if (res.ok) {
+            mostrarMensaje("mensajeReserva", "✅ Reserva solicitada exitosamente", "exito")
+            document.getElementById("idEspacioSelect").value = ""
+            document.getElementById("fechaReserva").value = ""
+            document.getElementById("horaInicio").value = ""
+            document.getElementById("horaFin").value = ""
+            document.getElementById("cantidadAsistentes").value = ""
+            cargarMisReservas()
+        } else {
+            const err = await res.json()
+            mostrarMensaje("mensajeReserva", "❌ " + (err.detail || "Error"), "error")
+        }
+    } catch (error) {
+        mostrarMensaje("mensajeReserva", "❌ Error de conexión", "error")
+    }
+}
+
+async function cambiarEstado(id, estado) {
+    try {
+        const res = await fetch(`${API_URL}/reservas/${id}/estado`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ estado: estado })
+        })
+        if (res.ok) {
+            cargarReservasPendientes()
+            cargarMisReservas()
+        } else {
+            alert("Error al cambiar el estado")
+        }
+    } catch (error) {
+        console.error("Error:", error)
+        alert("Error de conexión")
+    }
+}
+
+async function cancelarReserva(id) {
+    if (!confirm("¿Cancelar esta reserva?")) return
+    
+    try {
+        const res = await fetch(`${API_URL}/reservas/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+            mostrarMensaje("mensajeReserva", "✅ Reserva cancelada", "exito")
+            cargarMisReservas()
+        } else {
+            alert("Error al cancelar")
+        }
+    } catch (error) {
+        console.error("Error:", error)
+        alert("Error de conexión")
+    }
+}
+</script>
+
+</body>
+</html>

@@ -14,5 +14,5 @@ class Reserva(Base):
     cantidad_asistentes = Column(Integer, nullable=False)
     estado = Column(String, nullable=False, default="esperando")
 
-    usuario = relationship("Usuario")
-    espacio = relationship("Espacio")
+    usuario = relationship("Usuario", backref="reservas")
+    espacio = relationship("Espacio", backref="reservas")

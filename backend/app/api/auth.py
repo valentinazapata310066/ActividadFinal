@@ -13,9 +13,7 @@ def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    usuario = db.query(Usuario).filter(
-        Usuario.correo == form_data.username
-    ).first()
+    usuario = db.query(Usuario).filter(Usuario.correo == form_data.username).first()
 
     if not usuario or not verificar_password(form_data.password, usuario.password_hash):
         raise HTTPException(
